@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#eef2e8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Rise">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Rise</title>
+<style>
+:root{
+  --bg:#f4f2ea; --paper:#fbfaf5; --line:#e4e1d4; --ink:#34413a; --soft:#6e7b72;
+  --accent:#6f9a7a; --accent-2:#a9c7a8; --accent-ink:#ffffff; --chip:#e7efe3;
+  --card-shadow:0 2px 10px rgba(52,65,58,.07);
+  --walk:#c9a86a; --loop:#7aa0b8; --cali:#6f9a7a;
+}
+body.night{
+  --bg:#1f1b2b; --paper:#2a2439; --line:#3a3350; --ink:#ece8f6; --soft:#a79fbd;
+  --accent:#a99bd6; --accent-2:#6d6196; --accent-ink:#1f1b2b; --chip:#383052;
+  --card-shadow:0 2px 12px rgba(0,0,0,.35);
+  --walk:#d4b77e; --loop:#8fb3cb; --cali:#a99bd6;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Nunito',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);
+  min-height:100vh;padding:env(safe-area-inset-top) 0 calc(84px + env(safe-area-inset-bottom));
+  transition:background .4s,color .4s;
+}
+.wrap{max-width:520px;margin:0 auto;padding:18px 16px}
+header{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 14px}
+header h1{font-size:22px;margin:0;font-weight:800;letter-spacing:.3px}
+header .date{color:var(--soft);font-size:14px}
+.iconbtn{border:none;background:var(--chip);color:var(--ink);width:38px;height:38px;border-radius:12px;font-size:18px;cursor:pointer}
+
+.note{
+  background:var(--paper);border-radius:18px;padding:16px 18px 14px;box-shadow:var(--card-shadow);
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 29px,var(--line) 29px,var(--line) 30px);
+  background-position:0 12px;margin-bottom:16px;position:relative
+}
+.note p{font-family:'Caveat',cursive;font-size:25px;line-height:30px;margin:0;color:var(--ink)}
+.note small{display:block;text-align:right;font-family:'Caveat',cursive;font-size:20px;color:var(--soft);margin-top:2px}
+
+.daypick{display:flex;gap:6px;margin:0 0 16px}
+.daypick button{
+  flex:1;border:none;background:var(--paper);color:var(--ink);border-radius:14px;padding:8px 0 7px;
+  box-shadow:var(--card-shadow);cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px
+}
+.daypick button .d{font-size:11px;color:var(--soft);text-transform:uppercase;font-weight:700}
+.daypick button .n{font-size:16px;font-weight:800}
+.daypick button .dots{display:flex;gap:2px;height:7px}
+.daypick button .dots i{width:7px;height:7px;border-radius:50%;display:block}
+.daypick button.sel{background:var(--accent);color:var(--accent-ink)}
+.daypick button.sel .d{color:var(--accent-ink);opacity:.85}
+.daypick button.future{opacity:.45;pointer-events:none}
+
+h2{font-size:15px;text-transform:uppercase;letter-spacing:.8px;color:var(--soft);margin:22px 4px 10px;font-weight:800}
+
+.act{
+  display:flex;align-items:center;gap:14px;background:var(--paper);border-radius:18px;padding:14px 16px;
+  margin-bottom:10px;box-shadow:var(--card-shadow);cursor:pointer;border:2px solid transparent;transition:transform .12s
+}
+.act:active{transform:scale(.98)}
+.act .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;flex-shrink:0}
+.act .tx{flex:1}
+.act .tx b{display:block;font-size:17px}
+.act .tx span{font-size:13px;color:var(--soft)}
+.act .ck{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:16px;flex-shrink:0}
+.act.done{border-color:var(--accent-2)}
+.act.done .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+.card{background:var(--paper);border-radius:18px;padding:16px;box-shadow:var(--card-shadow);margin-bottom:12px}
+.weigh-card{display:flex;align-items:center;gap:12px}
+.weigh-card .tx{flex:1;font-size:15px}
+.weigh-card .tx b{display:block;font-size:16px}
+.btn{
+  border:none;background:var(--accent);color:var(--accent-ink);font-family:inherit;font-weight:800;font-size:15px;
+  padding:12px 18px;border-radius:14px;cursor:pointer
+}
+.btn.ghost{background:var(--chip);color:var(--ink)}
+.btn.small{padding:8px 12px;font-size:13px;border-radius:11px}
+.btn.wide{width:100%;padding:15px;font-size:17px}
+
+.weeksum{font-size:15px;line-height:1.6}
+.weeksum .row{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:6px 0}
+.weeksum .row:last-child{border-bottom:none}
+
+nav{
+  position:fixed;left:0;right:0;bottom:0;background:var(--paper);display:flex;justify-content:center;
+  padding:8px 0 calc(8px + env(safe-area-inset-bottom));box-shadow:0 -2px 14px rgba(0,0,0,.07);z-index:20
+}
+nav .in{display:flex;max-width:520px;width:100%}
+nav button{flex:1;min-width:0;border:none;background:none;color:var(--soft);font-family:inherit;font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0}
+nav button .e{font-size:22px}
+nav button.on{color:var(--accent)}
+
+.view{display:none}
+.view.on{display:block;animation:fade .25s}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(20,20,30,.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--bg);border-radius:24px 24px 0 0;
+  transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);z-index:50;
+  padding:10px 16px calc(20px + env(safe-area-inset-bottom))
+}
+.sheet.on{transform:none}
+.sheet .grab{width:42px;height:5px;border-radius:3px;background:var(--line);margin:4px auto 12px}
+.sheet .inner{max-width:520px;margin:0 auto}
+.sheet h3{margin:4px 2px 4px;font-size:20px}
+.sheet .sub{color:var(--soft);font-size:14px;margin:0 2px 14px}
+
+.ex{background:var(--paper);border-radius:16px;padding:12px 14px;margin-bottom:9px;box-shadow:var(--card-shadow)}
+.ex .top{display:flex;align-items:center;gap:12px;cursor:pointer}
+.ex .top .ck{width:28px;height:28px;border-radius:9px;border:2px solid var(--line);display:grid;place-items:center;flex-shrink:0;font-size:15px}
+.ex.done .top .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.ex .top b{flex:1;font-size:16px}
+.ex .top span{color:var(--soft);font-size:13px;white-space:nowrap}
+.ex .how{font-size:13.5px;color:var(--soft);margin:7px 0 8px 40px;line-height:1.45}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-left:40px}
+.chip{border:none;background:var(--chip);color:var(--ink);font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 10px;border-radius:999px;cursor:pointer}
+.chip.on{background:var(--accent);color:var(--accent-ink)}
+.lvl-label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--soft);margin:2px 0 5px 40px;font-weight:800}
+
+.seg{display:flex;background:var(--chip);border-radius:13px;padding:3px;gap:3px}
+.seg button{flex:1;border:none;background:none;color:var(--ink);font-family:inherit;font-weight:800;padding:9px 0;border-radius:10px;cursor:pointer;font-size:14px}
+.seg button.on{background:var(--paper);box-shadow:var(--card-shadow)}
+
+.field{margin:12px 0}
+.field label{display:block;font-size:13px;font-weight:800;color:var(--soft);margin:0 2px 6px}
+.field input[type=number],.field input[type=text],.field select{
+  width:100%;font-family:inherit;font-size:18px;padding:12px 14px;border-radius:13px;border:2px solid var(--line);
+  background:var(--paper);color:var(--ink);outline:none
+}
+.field input:focus{border-color:var(--accent)}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:44px;height:44px;border-radius:13px;border:none;background:var(--chip);color:var(--ink);font-size:22px;font-weight:800;cursor:pointer}
+.stepper .val{flex:1;text-align:center;font-size:22px;font-weight:800}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+.row2{display:flex;gap:10px}
+.row2>*{flex:1}
+
+.chart{width:100%;height:170px;display:block}
+.wlist{font-size:15px}
+.wlist .r{display:flex;justify-content:space-between;padding:9px 2px;border-bottom:1px dashed var(--line)}
+.wlist .r:last-child{border-bottom:none}
+.wlist .r span{color:var(--soft)}
+.muted{color:var(--soft);font-size:14px;line-height:1.5}
+.del{border:none;background:none;color:var(--soft);font-size:16px;cursor:pointer;padding:0 0 0 10px}
+
+/* eten */
+.four{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.four div{background:var(--chip);border-radius:14px;padding:10px 12px;font-size:13px;color:var(--soft)}
+.four span{font-size:22px;display:block}
+.four b{display:block;color:var(--ink);font-size:15px}
+.fold{background:var(--paper);border-radius:16px;margin-bottom:9px;box-shadow:var(--card-shadow);overflow:hidden}
+.fold summary{list-style:none;padding:14px 16px;font-weight:800;font-size:16px;cursor:pointer;display:flex;justify-content:space-between}
+.fold summary::-webkit-details-marker{display:none}
+.fold summary::after{content:'＋';color:var(--soft)}
+.fold[open] summary::after{content:'−'}
+.fold .body{padding:0 16px 12px;font-size:14.5px;line-height:1.5}
+.fold .body p{margin:0 0 9px}
+.tip{background:var(--chip);border-radius:11px;padding:8px 11px;font-weight:700}
+.swaps .sw{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.swaps .sw:last-child{border-bottom:none}
+.swaps .sw span{flex:1;color:var(--soft)}
+.swaps .sw i{font-style:normal;color:var(--accent);font-weight:800}
+.swaps .sw b{flex:1.3}
+.meals .m{padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px;color:var(--soft);line-height:1.45}
+.meals .m:last-child{border-bottom:none}
+.meals .m b{display:block;color:var(--ink);font-size:15.5px}
+.plate-card{display:flex;align-items:center;gap:16px}
+.plate{width:120px;height:120px;flex-shrink:0}
+.legend div{font-size:13px;color:var(--soft);margin:6px 0;line-height:1.35}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.legend b{color:var(--ink);font-size:14.5px;display:inline}
+
+/* rondje-begeleider */
+.guide{position:fixed;inset:0;background:var(--bg);z-index:60;display:none;flex-direction:column;
+  padding:calc(14px + env(safe-area-inset-top)) 20px calc(22px + env(safe-area-inset-bottom))}
+.guide.on{display:flex;animation:fade .25s}
+.g-top{display:flex;justify-content:space-between;align-items:center;color:var(--soft);font-weight:800;max-width:520px;width:100%;margin:0 auto}
+.g-main{flex:1;display:flex;flex-direction:column;justify-content:center;text-align:center;max-width:520px;width:100%;margin:0 auto}
+.g-kind{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--accent);font-weight:800}
+.g-name{font-size:34px;font-weight:800;margin:8px 0 4px}
+.g-reps{font-size:20px;color:var(--soft);font-weight:700}
+.g-timer{font-size:72px;font-weight:800;margin:18px 0 6px;font-variant-numeric:tabular-nums;min-height:10px}
+.g-how{font-size:15.5px;color:var(--soft);line-height:1.5;margin-top:10px}
+.g-next{text-align:center;color:var(--soft);font-size:14px;margin-bottom:12px;max-width:520px;width:100%;margin-left:auto;margin-right:auto}
+.g-btns{display:flex;gap:10px;max-width:520px;width:100%;margin:0 auto}
+.g-btns .btn{flex:1;padding:16px;font-size:17px}
+.g-btns .btn.ghost{flex:.6}
+/* maand */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin:8px 0 4px}
+.cal .h{font-size:11px;color:var(--soft);text-align:center;font-weight:800;text-transform:uppercase}
+.cal .c{aspect-ratio:1;border-radius:10px;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;font-weight:700;gap:2px}
+.cal .c.empty{background:none}
+.cal .c .dots{display:flex;gap:2px}
+.cal .c .dots i{width:6px;height:6px;border-radius:50%}
+.cal .c.today{outline:2px solid var(--accent)}
+.mnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mnav b{font-size:18px}
+.toast.big .big{font-size:64px}
+.toast.big p{font-size:32px}
+
+/* celebrate */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
+.toast{
+  position:fixed;left:50%;top:22%;transform:translate(-50%,-10px) scale(.94);opacity:0;z-index:80;pointer-events:none;
+  background:var(--paper);border-radius:22px;padding:22px 24px 18px;box-shadow:0 10px 40px rgba(0,0,0,.18);
+  width:min(86vw,380px);text-align:center;transition:all .35s cubic-bezier(.2,.9,.3,1.3)
+}
+.toast.on{opacity:1;transform:translate(-50%,0) scale(1)}
+.toast .big{font-size:46px;line-height:1}
+.toast p{font-family:'Caveat',cursive;font-size:28px;line-height:1.15;margin:10px 0 0}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="toast" id="toast"><div class="big" id="toastEmoji">🎉</div><p id="toastText"></p></div>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Rise</h1>
+      <div class="date" id="hdrDate"></div>
+    </div>
+    <button class="iconbtn" id="themeBtn" aria-label="Dag of nacht">🌙</button>
+  </header>
+
+  <!-- VANDAAG -->
+  <section class="view on" id="v-today">
+    <div class="note"><p id="friendText"></p><small>— Rise</small></div>
+
+    <div class="daypick" id="dayPick"></div>
+
+    <h2 id="dayTitle">Vandaag</h2>
+    <div class="act" data-act="cali">
+      <div class="ic" style="background:color-mix(in srgb,var(--cali) 22%,transparent)">💪</div>
+      <div class="tx"><b>Calisthenics</b><span id="caliSub">±20 min · het rondje</span></div>
+      <div class="ck">✓</div>
+    </div>
+    <div class="act" data-act="loop">
+      <div class="ic" style="background:color-mix(in srgb,var(--loop) 25%,transparent)">⛰️</div>
+      <div class="tx"><b>Loopband met helling</b><span id="loopSub">Tik om af te strepen</span></div>
+      <div class="ck">✓</div>
+    </div>
+    <div class="act" data-act="wandel">
+      <div class="ic" style="background:color-mix(in srgb,var(--walk) 25%,transparent)">🚶‍♀️</div>
+      <div class="tx"><b>Rustig lopen</b><span id="wandelSub">Zonder helling, gewoon fijn</span></div>
+      <div class="ck">✓</div>
+    </div>
+
+    <div id="weighSlot"></div>
+
+    <h2>Deze week</h2>
+    <div class="card weeksum" id="weekSum"></div>
+    <button class="btn wide ghost" id="monthBtn">🗓️ Terugblik op deze maand</button>
+  </section>
+
+  <!-- OEFENINGEN -->
+  <section class="view" id="v-plan">
+    <div class="note"><p>Hier staat jouw versie van elke oefening. Wordt er een te makkelijk? Tik dan gewoon een stapje verder.</p><small>— Rise</small></div>
+    <button class="btn wide" id="startGuide2">▶︎ Start rondje</button>
+    <div style="height:14px"></div>
+    <div id="planList"></div>
+    <h2>Jouw mijlpalen</h2>
+    <div class="card wlist" id="msList"></div>
+    <h2>Rondje</h2>
+    <div class="card muted">2–3 rondes van alle zes, korte pauze ertussen. Weinig energie? Eén rondje telt ook helemaal.</div>
+  </section>
+
+  <!-- ETEN -->
+  <section class="view" id="v-food">
+    <div class="note"><p>Niks is verboden. Het gaat om wat je vaak eet, niet om dat ene koekje.</p><small>— Rise</small></div>
+
+    <h2>Snel onthouden</h2>
+    <div class="card">
+      <div class="four">
+        <div><span>🧱</span><b>Eiwit</b>bouwt</div>
+        <div><span>⛽</span><b>Koolhydraten</b>geven brandstof</div>
+        <div><span>🥦</span><b>Groente</b>vult</div>
+        <div><span>🫒</span><b>Vet</b>een beetje, voor smaak</div>
+      </div>
+    </div>
+
+    <h2>Wat is wat?</h2>
+    <details class="fold" open>
+      <summary>🧱 Eiwitten</summary>
+      <div class="body">
+        <p>Daar maakt je lijf spieren van. Eiwit geeft ook een vol gevoel dat lang blijft, dus je hebt minder snel weer trek.</p>
+        <p class="ex-list"><b>Zit in:</b> Griekse yoghurt, kwark, skyr, eieren, kip, vis, tonijn, hüttenkäse, kaas, linzen, kikkererwten, bonen, tofu.</p>
+        <p class="tip">Bij elke maaltijd een portie zo groot als je handpalm.</p>
+      </div>
+    </details>
+    <details class="fold">
+      <summary>⛽ Koolhydraten</summary>
+      <div class="body">
+        <p>Dat is brandstof: je lijf haalt er snel energie uit. Er zijn twee soorten.</p>
+        <p class="ex-list"><b>Langzaam</b> (geven lang energie, je zit langer vol): volkoren brood, havermout, aardappelen, zilvervliesrijst, volkoren pasta, peulvruchten, fruit.</p>
+        <p class="ex-list"><b>Snel</b> (geven een piek en dan een dip, en snel weer honger): wit brood, koek, snoep, frisdrank, sap, witte pasta.</p>
+        <p class="tip">Koolhydraten zijn niet slecht. Kies vaker de langzame, en schep er wat minder van op.</p>
+      </div>
+    </details>
+    <details class="fold">
+      <summary>🥦 Groente en vezels</summary>
+      <div class="body">
+        <p>Groente vult je maag met weinig calorieën. Vezels (in groente, fruit, volkoren en peulvruchten) zorgen dat je langer vol zit en zijn goed voor je darmen.</p>
+        <p class="tip">Maak van groente de helft van je bord. Diepvries telt ook gewoon.</p>
+      </div>
+    </details>
+    <details class="fold">
+      <summary>🫒 Vetten</summary>
+      <div class="body">
+        <p>Je lijf heeft vet nodig, maar in een klein beetje zit al veel energie. Een eetlepel olie is net zoveel als een boterham.</p>
+        <p class="ex-list"><b>Fijne vetten:</b> noten, avocado, olijfolie, zaden, vette vis zoals zalm.</p>
+        <p class="ex-list"><b>Liever af en toe:</b> chips, koek, gebak, frituur, vette snacks, veel mayo of saus.</p>
+      </div>
+    </details>
+
+    <h2>Makkelijke ruilen</h2>
+    <div class="card swaps">
+      <div class="sw"><span>Wit brood</span><i>→</i><b>Volkoren brood</b></div>
+      <div class="sw"><span>Frisdrank of sap</span><i>→</i><b>Water, thee of een zero-variant</b></div>
+      <div class="sw"><span>Koekje bij de thee</span><i>→</i><b>Handje noten of kwark met fruit</b></div>
+      <div class="sw"><span>Mayo</span><i>→</i><b>Yoghurtsausje of mosterd</b></div>
+      <div class="sw"><span>Chips</span><i>→</i><b>Popcorn of rauwkost met hummus</b></div>
+      <div class="sw"><span>Witte pasta of rijst</span><i>→</i><b>Volkoren of zilvervlies</b></div>
+    </div>
+
+    <h2>Lunch</h2>
+    <div class="card meals">
+      <div class="m"><b>🍳 Roerei of omelet</b>2–3 eieren met spinazie of tomaat, en een volkoren boterham.</div>
+      <div class="m"><b>🌯 Tonijnwrap</b>Tonijn met een lepel yoghurt in plaats van mayo, sla en maïs.</div>
+      <div class="m"><b>🥒 Hüttenkäse op crackers</b>Met komkommer, tomaat en wat peper.</div>
+      <div class="m"><b>🥪 Volkoren boterhammen</b>Met kipfilet, rosbief of 30+ kaas, en rauwkost erbij.</div>
+      <div class="m"><b>🍲 Linzen- of bonensoep</b>Kant-en-klaar is prima, met een gekookt ei of een boterham.</div>
+      <div class="m"><b>🥗 Salade</b>Met kip, falafel of kikkererwten, en een handje noten.</div>
+      <div class="m"><b>♻️ Restje avondeten</b>Makkelijk, en vaak al een goede verhouding.</div>
+    </div>
+
+    <h2>Avondeten: het lunchbordje</h2>
+    <div class="card plate-card">
+      <svg viewBox="0 0 120 120" class="plate">
+        <circle cx="60" cy="60" r="56" style="fill:var(--chip)"/>
+        <circle cx="60" cy="60" r="48" style="fill:var(--paper)"/>
+        <path d="M60 60 L60 12 A48 48 0 0 1 60 108 Z" style="fill:#9cc29a"/>
+        <path d="M60 60 L60 108 A48 48 0 0 1 12 60 Z" style="fill:#e3b98a"/>
+        <path d="M60 60 L12 60 A48 48 0 0 1 60 12 Z" style="fill:#e8d58c"/>
+      </svg>
+      <div class="legend">
+        <div><i style="background:#9cc29a"></i><b>Helft groente</b></div>
+        <div><i style="background:#e3b98a"></i><b>Kwart eiwit</b><br>vlees, vis, ei, tofu, peulvruchten</div>
+        <div><i style="background:#e8d58c"></i><b>Kwart koolhydraten</b><br>aardappel, rijst, pasta</div>
+      </div>
+    </div>
+    <div class="card muted">Tip voor Picnic: bestel een extra zak groente erbij, zoals spinazie, broccoli of een wokmix, en schep die als eerste op je bord.</div>
+
+    <h2>Tussendoor</h2>
+    <div class="card meals">
+      <div class="m"><b>🥣 Kwark of skyr</b>Met wat fruit.</div>
+      <div class="m"><b>🥚 Gekookt ei</b>Even zoutje erop.</div>
+      <div class="m"><b>🥜 Handje noten</b>Ongeveer wat in je handpalm past, niet de hele zak.</div>
+      <div class="m"><b>🍎 Fruit met een blokje kaas</b>Zoet en hartig, vult goed.</div>
+      <div class="m"><b>🥕 Rauwkost met hummus</b>Lekker knapperig.</div>
+    </div>
+
+    <h2>Rond het trainen</h2>
+    <div class="card muted">Je hoeft niks speciaals te eten. Heb je trek voor een training, neem dan iets kleins zoals een banaan. Na een training is een maaltijd of tussendoortje met eiwit fijn, binnen een paar uur.</div>
+  </section>
+
+  <!-- GEWICHT -->
+  <section class="view" id="v-weight">
+    <div class="note"><p id="weightNote">Gewicht schommelt van dag tot dag. Kijk vooral naar de lijn over weken, en naar hoe je kleren zitten.</p><small>— Rise</small></div>
+    <div class="card">
+      <svg class="chart" id="chart" viewBox="0 0 340 170" preserveAspectRatio="none"></svg>
+    </div>
+    <button class="btn wide" id="addWeightBtn">Weegmoment toevoegen</button>
+    <h2>Eerder</h2>
+    <div class="card wlist" id="wList"></div>
+  </section>
+
+  <!-- INSTELLINGEN -->
+  <section class="view" id="v-set">
+    <h2>Weegmoment</h2>
+    <div class="card">
+      <div class="field"><label>Hoe vaak</label>
+        <div class="seg" id="segEvery"><button data-v="7">Elke week</button><button data-v="14">Om de week</button><button data-v="0">Niet</button></div>
+      </div>
+      <div class="field"><label>Op welke dag</label>
+        <select id="weighDay">
+          <option value="1">Maandag</option><option value="2">Dinsdag</option><option value="3">Woensdag</option>
+          <option value="4">Donderdag</option><option value="5">Vrijdag</option><option value="6">Zaterdag</option><option value="0">Zondag</option>
+        </select>
+      </div>
+    </div>
+
+    <h2>Loopband standaard</h2>
+    <div class="card">
+      <div class="row2">
+        <div class="field"><label>Minuten</label><input type="number" id="defMin" inputmode="numeric"></div>
+        <div class="field"><label>Gaatje</label><select id="defInc"><option value="0">Plat</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
+        <div class="field"><label>Km/u</label><input type="number" id="defSpeed" inputmode="decimal" step="0.1"></div>
+      </div>
+    </div>
+
+    <h2>Weergave</h2>
+    <div class="card">
+      <div class="seg" id="segTheme"><button data-v="auto">Automatisch</button><button data-v="day">Dag</button><button data-v="night">Nacht</button></div>
+    </div>
+
+    <h2>Dropbox</h2>
+    <div class="card" id="dbxCard"></div>
+
+    <h2>Koppeling met Lately</h2>
+    <div class="card muted" id="bridgeInfo">
+      Rise zet elke dag klaar wat je aan beweging gedaan hebt, zodat Lately het kan meelezen. Dat werkt als beide apps op hetzelfde GitHub-account staan.
+    </div>
+
+    <h2>Gegevens</h2>
+    <div class="card">
+      <div class="row2">
+        <button class="btn ghost" id="exportBtn">Back-up opslaan</button>
+        <button class="btn ghost" id="importBtn">Back-up terugzetten</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json" style="display:none">
+      <p class="muted" style="margin:12px 2px 0">Je gegevens blijven alleen op dit apparaat.</p>
+    </div>
+    <p class="muted" style="text-align:center;margin-top:20px">Rise · versie <span id="ver"></span></p>
+  </section>
+</div>
+
+<nav><div class="in">
+  <button class="on" data-view="today"><span class="e">☀️</span>Vandaag</button>
+  <button data-view="plan"><span class="e">💪</span>Oefeningen</button>
+  <button data-view="food"><span class="e">🥗</span>Eten</button>
+  <button data-view="weight"><span class="e">⚖️</span>Gewicht</button>
+  <button data-view="set"><span class="e">⚙️</span>Instellingen</button>
+</div></nav>
+
+<div id="guide" class="guide">
+  <div class="g-top"><span id="gStep"></span><button class="iconbtn" id="gClose" aria-label="Stoppen">✕</button></div>
+  <div class="g-main">
+    <div class="g-kind" id="gKind"></div>
+    <div class="g-name" id="gName"></div>
+    <div class="g-reps" id="gReps"></div>
+    <div class="g-timer" id="gTimer"></div>
+    <div class="g-how" id="gHow"></div>
+  </div>
+  <div class="g-next" id="gNext"></div>
+  <div class="g-btns"><button class="btn ghost" id="gSkip">Overslaan</button><button class="btn" id="gGo">Klaar</button></div>
+</div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><div class="inner" id="sheetInner"></div></div>
+
+<script>
+const VERSION = '2026-11-16b';
+const KEY = 'sterk.v1';
+const BRIDGE_KEY = 'lately.bridge.beweging';
+
+/* ---------- oefeningen ---------- */
+const EXERCISES = [
+  {id:'push', name:'Push-ups', reps:'6–10×',
+   how:'Handen iets breder dan je schouders, lichaam in één lijn, borst naar je handen laten zakken en weer omhoog duwen.',
+   levels:['Tegen de muur','Aanrecht','Bank','Knieën','Gewoon']},
+  {id:'squat', name:'Squats', reps:'10–15×',
+   how:'Voeten op heupbreedte, billen naar achteren alsof je gaat zitten, knieën in de richting van je tenen.',
+   levels:['Naar de stoel','Net boven de stoel','Zonder stoel','Langzaam zakken']},
+  {id:'row', name:'Handdoek-rows', reps:'8–12×',
+   how:'Handdoek om een stevige deurklink, deur dicht. Naar achteren leunen met gestrekte armen en jezelf naar de deur trekken.',
+   levels:['Bijna rechtop','Iets achterover','Ver achterover']},
+  {id:'bridge', name:'Glute bridge', reps:'10–15×',
+   how:'Op je rug, knieën gebogen, voeten plat. Duw je heupen omhoog tot je lichaam een lijn is, even vasthouden, rustig zakken.',
+   levels:['Twee benen','Pauze bovenin','Eén been']},
+  {id:'plank', name:'Plank', reps:'20–30 sec',
+   how:'Op je onderarmen, buik en billen aangespannen, rug recht. Rustig blijven ademen.',
+   levels:['Op je knieën','Gewoon','Langer vasthouden']},
+  {id:'deadbug', name:'Dead bug', reps:'6× per kant',
+   how:'Op je rug, armen omhoog, knieën boven je heupen. Strek tegelijk je tegenovergestelde arm en been, onderrug blijft op de vloer.',
+   levels:['Alleen armen','Alleen benen','Arm + been']},
+];
+
+/* ---------- vriendelijke teksten ---------- */
+const CHEERS = {
+  cali:[
+    ['💪','Kijk jou! Rondje gedaan.'],['🌟','Weer een stapje sterker.'],['🎉','Gedaan! Je spieren gaan nu lekker herstellen.'],
+    ['🔥','Dat was hem. Trots op je.'],['✨','Elke push-up telt. En jij deed er een heleboel.'],['🥳','Yes! Training in de pocket.'],
+    ['🌱','Zo groeit kracht: rondje voor rondje.'],['🙌','Dat heb je toch maar mooi gedaan.'],['💚','Je lijf zegt dankjewel.'],
+    ['⚡','Klaar! Vergeet niet even iets te drinken.'],['🌻','Sterke vrouw, sterk rondje.'],['🎈','Weer eentje. Lekker bezig.']
+  ],
+  loop:[
+    ['⛰️','Bergje beklommen! Loopband gedaan.'],['🎉','Een heel stuk gelopen. Mooi!'],['🌄','Helling op, en jij gewoon door.'],
+    ['👟','Die benen hebben vandaag gewerkt.'],['✨','Loopband afgestreept. Goed gedaan.'],['💚','Fijn gelopen, hè?'],
+    ['🥳','Weer een wandeling in de pocket.'],['🌟','Kilometers maken, op je eigen tempo.']
+  ],
+  wandel:[
+    ['🚶‍♀️','Rustig gelopen. Dat telt helemaal mee.'],['🍃','Fijn bewegen, zonder moeten.'],['💚','Lekker gewandeld. Goed voor je hoofd én je lijf.'],
+    ['🌿','Een rustig rondje is ook beweging.'],['☀️','Gewoon fijn gelopen. Mooi zo.']
+  ],
+  weigh:[
+    ['📝','Genoteerd. Het is maar één momentje in een lange lijn.'],['🌱','Dankjewel. De lijn vertelt het verhaal, niet één getal.'],
+    ['💚','Opgeslagen. Je doet het goed, wat de weegschaal ook zegt.']
+  ]
+};
+const NOTES = {
+  doneToday:[
+    'Vandaag heb je al iets gedaan. Dat is mooi. De rest van de dag mag gewoon zijn.',
+    'Afgestreept! Je lijf heeft vandaag wat gekregen.',
+    'Kijk eens wat je vandaag gedaan hebt. Echt fijn.',
+    'Je hebt vandaag bewogen. Nu mag je lekker herstellen.'
+  ],
+  fresh:[
+    'Hoi! Zin om vandaag iets te doen? Alles telt, ook iets kleins.',
+    'Een nieuwe dag. Doe wat goed voelt, en streep het hier af.',
+    'Fijn dat je er bent. Een rondje, een stukje lopen, of gewoon niks: het mag allemaal.',
+    'Hier ben ik weer. Ik juich mee met alles wat je doet.',
+    'Rustdagen horen er ook bij. Daar word je sterker van.',
+    'Eén rondje is ook een rondje. Kijk maar wat er vandaag past.'
+  ],
+  back:[
+    'Fijn je weer te zien! Pak het op waar het jou uitkomt.',
+    'Welkom terug. Geen inhaalwerk nodig, gewoon vandaag.',
+    'Hoi! Alles wat je vandaag doet is een mooi begin.'
+  ],
+  restDay:[
+    'Vandaag geen training? Prima. Je spieren worden juist nu sterker.',
+    'Rustdag. Dat is ook een deel van het plan.'
+  ],
+  past:[
+    'Even terugkijken? Tik aan wat je die dag gedaan hebt.',
+    'Vergeten af te strepen? Geen probleem, dat kan hier alsnog.'
+  ]
+};
+
+/* ---------- opslag ---------- */
+function defaults(){
+  return {
+    settings:{weighEvery:7, weighDay:0, defMin:60, defInc:3, defSpeed:3.5, theme:'auto'},
+    levels:{push:'Knieën', squat:'Naar de stoel', row:'Iets achterover', bridge:'Twee benen', plank:'Op je knieën', deadbug:'Arm + been'},
+    days:{}, weights:[], lastNote:{}
+  };
+}
+let S;
+try{ S = Object.assign(defaults(), JSON.parse(localStorage.getItem(KEY)||'{}')); }catch(e){ S = defaults(); }
+S.settings = Object.assign(defaults().settings, S.settings||{});
+S.levels = Object.assign(defaults().levels, S.levels||{});
+
+function save(quiet){
+  if(!quiet) S.updatedAt = Date.now();
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+  writeBridge();
+  if(!quiet) dbxSoon();
+}
+function writeBridge(){
+  // gedeeld met Lately (zelfde GitHub-account = zelfde opslag in de browser)
+  const out = [];
+  const cutoff = iso(addDays(new Date(), -90));
+  Object.keys(S.days).sort().forEach(k=>{
+    if(k < cutoff) return;
+    const d = S.days[k]; if(!hasAny(d)) return;
+    out.push({
+      date:k,
+      calisthenics: !!(d.cali && d.cali.done),
+      calisthenicsRondes: d.cali && d.cali.done ? (d.cali.rounds||null) : null,
+      loopbandMin: d.loop ? d.loop.min : 0,
+      loopbandHelling: d.loop ? normInc(d.loop.inc) : null,
+      loopbandSnelheid: d.loop ? (d.loop.speed||null) : null,
+      wandelMin: d.wandel ? d.wandel.min : 0
+    });
+  });
+  try{ localStorage.setItem(BRIDGE_KEY, JSON.stringify({source:'Rise', version:VERSION, updated:new Date().toISOString(), days:out})); }catch(e){}
+}
+
+/* ---------- datum helpers ---------- */
+const DAYS_SHORT = ['zo','ma','di','wo','do','vr','za'];
+const DAYS_LONG = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+const MONTHS = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+function iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function fromIso(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function startOfWeek(d){ const x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); const wd=(x.getDay()+6)%7; return addDays(x,-wd); }
+function niceDate(d){ return DAYS_LONG[d.getDay()]+' '+d.getDate()+' '+MONTHS[d.getMonth()]; }
+function hasAny(d){ return d && ((d.cali&&d.cali.done)||d.loop||d.wandel); }
+function pick(arr, key){
+  // varieer: niet twee keer achter elkaar dezelfde
+  let i = Math.floor(Math.random()*arr.length);
+  if(arr.length>1 && S.lastNote[key]===i) i = (i+1)%arr.length;
+  S.lastNote[key]=i; return arr[i];
+}
+
+let selDate = iso(new Date());
+const noteCache = {k:null,t:''};
+function dayObj(k){ return S.days[k] || (S.days[k]={}); }
+
+/* ---------- thema ---------- */
+function applyTheme(){
+  const t = S.settings.theme; const h = new Date().getHours();
+  const night = t==='night' || (t==='auto' && (h>=20 || h<7));
+  document.body.classList.toggle('night', night);
+  document.getElementById('themeBtn').textContent = night ? '☀️' : '🌙';
+  document.querySelector('meta[name=theme-color]').setAttribute('content', night ? '#1f1b2b' : '#f4f2ea');
+}
+document.getElementById('themeBtn').onclick = ()=>{
+  const night = document.body.classList.contains('night');
+  S.settings.theme = night ? 'day' : 'night'; save(); applyTheme(); renderSettings();
+};
+
+/* ---------- vandaag ---------- */
+function renderToday(){
+  const today = iso(new Date());
+  const now = new Date();
+  document.getElementById('hdrDate').textContent = niceDate(now);
+
+  // dagkiezer: deze week ma-zo
+  const ws = startOfWeek(now);
+  const dp = document.getElementById('dayPick'); dp.innerHTML='';
+  for(let i=0;i<7;i++){
+    const d = addDays(ws,i), k = iso(d), o = S.days[k]||{};
+    const b = document.createElement('button');
+    if(k===selDate) b.classList.add('sel');
+    if(k>today) b.classList.add('future');
+    let dots='';
+    if(o.cali&&o.cali.done) dots+='<i style="background:var(--cali)"></i>';
+    if(o.loop) dots+='<i style="background:var(--loop)"></i>';
+    if(o.wandel) dots+='<i style="background:var(--walk)"></i>';
+    b.innerHTML = `<span class="d">${DAYS_SHORT[d.getDay()]}</span><span class="n">${d.getDate()}</span><span class="dots">${dots}</span>`;
+    b.onclick = ()=>{ selDate=k; renderToday(); };
+    dp.appendChild(b);
+  }
+
+  const sd = fromIso(selDate);
+  document.getElementById('dayTitle').textContent = selDate===today ? 'Vandaag' : (selDate===iso(addDays(now,-1)) ? 'Gisteren' : DAYS_LONG[sd.getDay()]);
+
+  const o = S.days[selDate]||{};
+  const set = (act, done, sub)=>{
+    const el = document.querySelector(`.act[data-act=${act}]`);
+    el.classList.toggle('done', !!done);
+    if(sub!=null) el.querySelector('.tx span').textContent = sub;
+  };
+  const exDone = o.cali && o.cali.ex ? Object.values(o.cali.ex).filter(Boolean).length : 0;
+  set('cali', o.cali&&o.cali.done,
+      o.cali&&o.cali.done ? `Gedaan${o.cali.rounds? ' · '+o.cali.rounds+(o.cali.rounds>1?' rondes':' rondje'):''}` :
+      (exDone ? `${exDone} van 6 oefeningen` : '±20 min · het rondje'));
+  set('loop', o.loop, o.loop ? `${o.loop.min} min · ${incLabel(o.loop.inc)}${o.loop.speed?' · '+fmtNum(o.loop.speed)+' km/u':''}` : `Tik om af te strepen · ${S.settings.defMin} min`);
+  set('wandel', o.wandel, o.wandel ? `${o.wandel.min} min rustig gelopen` : 'Zonder helling, gewoon fijn');
+
+  // vriendennotitie (blijft hetzelfde zolang de situatie niet verandert)
+  let group, gkey;
+  if(selDate!==today){ group=NOTES.past; gkey='past'; }
+  else if(hasAny(o)){ group=NOTES.doneToday; gkey='done'; }
+  else {
+    const lastK = Object.keys(S.days).filter(k=>k<today && hasAny(S.days[k])).sort().pop();
+    const gap = lastK ? Math.round((fromIso(today)-fromIso(lastK))/864e5) : 0;
+    const yest = S.days[iso(addDays(now,-1))];
+    if(lastK && gap>=4){ group=NOTES.back; gkey='back'; }
+    else if(yest && yest.cali && yest.cali.done){ group=NOTES.restDay; gkey='rest'; }
+    else { group=NOTES.fresh; gkey='fresh'; }
+  }
+  const ck = today+'|'+selDate+'|'+gkey;
+  if(noteCache.k!==ck){ noteCache.k=ck; noteCache.t=pick(group,gkey); }
+  document.getElementById('friendText').textContent = noteCache.t;
+
+  renderWeighSlot();
+  renderWeekSum();
+}
+function incLabel(n){ n=normInc(n); return n===0?'plat':'helling '+n; }
+function normInc(n){ n=Number(n); return [0,1,2,3].includes(n)?n:3; }
+function fmtNum(n){ return String(n).replace('.',','); }
+
+function renderWeekSum(){
+  const ws = startOfWeek(new Date());
+  let c=0,l=0,lm=0,w=0,wm=0;
+  for(let i=0;i<7;i++){
+    const o = S.days[iso(addDays(ws,i))]; if(!o) continue;
+    if(o.cali&&o.cali.done) c++;
+    if(o.loop){ l++; lm+=Number(o.loop.min)||0; }
+    if(o.wandel){ w++; wm+=Number(o.wandel.min)||0; }
+  }
+  const el = document.getElementById('weekSum');
+  if(!c && !l && !w){ el.innerHTML = '<div class="muted">Nog niks afgestreept deze week. Alles wat je doet, komt hier te staan.</div>'; return; }
+  const rows=[];
+  if(c) rows.push(`<div class="row"><span>💪 Calisthenics</span><b>${c}×</b></div>`);
+  if(l) rows.push(`<div class="row"><span>⛰️ Loopband</span><b>${l}× · ${lm} min</b></div>`);
+  if(w) rows.push(`<div class="row"><span>🚶‍♀️ Rustig lopen</span><b>${w}× · ${wm} min</b></div>`);
+  el.innerHTML = rows.join('');
+}
+
+/* ---------- weegmoment ---------- */
+function weighDue(){
+  const s = S.settings; if(!s.weighEvery) return false;
+  const now = new Date(); const today = iso(now);
+  const last = S.weights.length ? S.weights[S.weights.length-1].date : null;
+  if(last===today) return false;
+  if(now.getDay()!==Number(s.weighDay)) {
+    // ook tonen als de dag gemist is en het al lang geleden is
+    if(!last) return false;
+    const gap = (fromIso(today)-fromIso(last))/864e5;
+    return gap >= s.weighEvery + 3;
+  }
+  if(!last) return true;
+  const gap = (fromIso(today)-fromIso(last))/864e5;
+  return gap >= s.weighEvery - 2;
+}
+function renderWeighSlot(){
+  const slot = document.getElementById('weighSlot');
+  if(selDate!==iso(new Date()) || !weighDue() || S.skipWeigh===iso(new Date())){ slot.innerHTML=''; return; }
+  slot.innerHTML = `<h2>Weegmoment</h2><div class="card weigh-card">
+    <div class="tx"><b>⚖️ Zin om even te wegen?</b>Mag, hoeft niet.</div>
+    <button class="btn small" id="wNow">Wegen</button><button class="btn small ghost" id="wSkip">Niet nu</button></div>`;
+  document.getElementById('wNow').onclick = openWeightSheet;
+  document.getElementById('wSkip').onclick = ()=>{ S.skipWeigh=iso(new Date()); save(); renderWeighSlot(); };
+}
+
+/* ---------- acties ---------- */
+document.querySelectorAll('.act').forEach(el=>{
+  el.onclick = ()=>{
+    const a = el.dataset.act;
+    if(a==='cali') openCaliSheet();
+    else if(a==='loop') openWalkSheet('loop');
+    else openWalkSheet('wandel');
+  };
+});
+
+/* ---------- sheet ---------- */
+const sheet = document.getElementById('sheet'), scrim = document.getElementById('scrim'), inner = document.getElementById('sheetInner');
+function openSheet(html){ inner.innerHTML = html; sheet.scrollTop=0; sheet.classList.add('on'); scrim.classList.add('on'); }
+function closeSheet(){ sheet.classList.remove('on'); scrim.classList.remove('on'); }
+scrim.onclick = closeSheet;
+
+function openCaliSheet(){
+  const o = dayObj(selDate);
+  o.cali = o.cali || {done:false, ex:{}, rounds:2};
+  const c = o.cali;
+  let html = `<h3>💪 Calisthenics</h3><p class="sub">Tik af wat je gedaan hebt. Alles of een deel, het telt allemaal.</p>
+    ${selDate===iso(new Date()) && !c.done ? '<button class="btn wide" id="startGuide">▶︎ Start rondje met begeleiding</button><div style="height:12px"></div>' : ''}`;
+  EXERCISES.forEach(e=>{
+    html += `<div class="ex ${c.ex[e.id]?'done':''}" data-ex="${e.id}">
+      <div class="top"><div class="ck">✓</div><b>${e.name}</b><span>${e.reps}</span></div>
+      <div class="how">${e.how}</div>
+      <div class="lvl-label">Jouw versie</div>
+      <div class="chips">${e.levels.map(l=>`<button class="chip ${S.levels[e.id]===l?'on':''}" data-lvl="${l}">${l}</button>`).join('')}</div>
+    </div>`;
+  });
+  html += `<div class="field"><label>Hoeveel rondes</label>
+    <div class="seg" id="segRounds">${[1,2,3].map(n=>`<button data-v="${n}" class="${c.rounds===n?'on':''}">${n}</button>`).join('')}</div></div>
+    <div style="height:8px"></div>
+    <button class="btn wide" id="caliDone">${c.done?'Opslaan':'Klaar! 🎉'}</button>
+    ${c.done?'<div style="height:8px"></div><button class="btn wide ghost" id="caliUndo">Toch niet gedaan</button>':''}`;
+  openSheet(html);
+
+  inner.querySelectorAll('.ex').forEach(box=>{
+    const id = box.dataset.ex;
+    box.querySelector('.top').onclick = ()=>{ c.ex[id]=!c.ex[id]; box.classList.toggle('done', c.ex[id]); save(); renderToday(); };
+    box.querySelectorAll('.chip').forEach(ch=>{
+      ch.onclick = ()=>{ setLevel(id, ch.dataset.lvl); box.querySelectorAll('.chip').forEach(x=>x.classList.toggle('on', x===ch)); };
+    });
+  });
+  inner.querySelectorAll('#segRounds button').forEach(b=>{
+    b.onclick = ()=>{ c.rounds=Number(b.dataset.v); inner.querySelectorAll('#segRounds button').forEach(x=>x.classList.toggle('on',x===b)); save(); };
+  });
+  document.getElementById('caliDone').onclick = ()=>{
+    const wasDone = c.done;
+    c.done = true;
+    if(!Object.values(c.ex).some(Boolean)) EXERCISES.forEach(e=>c.ex[e.id]=true);
+    save(); closeSheet(); renderToday();
+    if(!wasDone){ if(!countMilestone()) celebrate('cali'); }
+  };
+  const sg = document.getElementById('startGuide');
+  if(sg) sg.onclick = ()=>{ closeSheet(); openGuide(); };
+  const u = document.getElementById('caliUndo');
+  if(u) u.onclick = ()=>{ c.done=false; save(); closeSheet(); renderToday(); };
+}
+
+function openWalkSheet(kind){
+  const o = dayObj(selDate);
+  const existing = o[kind];
+  const isLoop = kind==='loop';
+  let min = existing ? existing.min : (isLoop ? S.settings.defMin : 30);
+  let inc = normInc(existing && isLoop ? existing.inc : S.settings.defInc);
+  let speed = existing && isLoop && existing.speed ? existing.speed : S.settings.defSpeed;
+  const html = `<h3>${isLoop?'⛰️ Loopband met helling':'🚶‍♀️ Rustig lopen'}</h3>
+    <p class="sub">${isLoop?'Pas aan als het anders ging dan normaal.':'Een rustig stukje, op de loopband of buiten.'}</p>
+    <div class="field"><label>Minuten</label>
+      <div class="stepper"><button data-d="-5">−</button><div class="val" id="mVal">${min}</div><button data-d="5">+</button></div></div>
+    ${isLoop?`<div class="field"><label>Helling (welk gaatje)</label>
+      <div class="seg" id="segInc">${[0,1,2,3].map(n=>`<button data-v="${n}" class="${inc===n?'on':''}">${n===0?'Plat':n}</button>`).join('')}</div></div>
+    <div class="field"><label>Snelheid: <span id="sVal">${fmtNum(speed)}</span> km/u</label>
+      <input type="range" id="sRange" min="1" max="8" step="0.1" value="${speed}"></div>`:''}
+    <div style="height:8px"></div>
+    <button class="btn wide" id="wDone">${existing?'Opslaan':'Gedaan! 🎉'}</button>
+    ${existing?'<div style="height:8px"></div><button class="btn wide ghost" id="wUndo">Toch niet gedaan</button>':''}`;
+  openSheet(html);
+  inner.querySelectorAll('.stepper button').forEach(b=>{
+    b.onclick = ()=>{ min = Math.max(5, min + Number(b.dataset.d)); document.getElementById('mVal').textContent=min; };
+  });
+  inner.querySelectorAll('#segInc button').forEach(b=>{
+    b.onclick = ()=>{ inc = Number(b.dataset.v); inner.querySelectorAll('#segInc button').forEach(x=>x.classList.toggle('on',x===b)); };
+  });
+  const sr = document.getElementById('sRange');
+  if(sr) sr.oninput = ()=>{ speed = Math.round(Number(sr.value)*10)/10; document.getElementById('sVal').textContent=fmtNum(speed); };
+  document.getElementById('wDone').onclick = ()=>{
+    o[kind] = isLoop ? {min, inc, speed} : {min};
+    save(); closeSheet(); renderToday();
+    if(!existing){ if(!countMilestone()) celebrate(kind); }
+  };
+  const u = document.getElementById('wUndo');
+  if(u) u.onclick = ()=>{ delete o[kind]; save(); closeSheet(); renderToday(); };
+}
+
+/* ---------- gewicht ---------- */
+function openWeightSheet(){
+  const last = S.weights.length ? S.weights[S.weights.length-1].kg : '';
+  openSheet(`<h3>⚖️ Weegmoment</h3><p class="sub">Het liefst 's ochtends, na het plassen, voor het ontbijt. Dan kun je de momenten het best vergelijken.</p>
+    <div class="field"><label>Gewicht (kg)</label><input type="number" id="kgIn" inputmode="decimal" step="0.1" placeholder="${last?fmtNum(last):''}"></div>
+    <div class="field"><label>Hoe zitten je kleren? (mag je overslaan)</label>
+      <div class="seg" id="segKleren"><button data-v="ruimer">Ruimer</button><button data-v="zelfde">Hetzelfde</button><button data-v="strakker">Strakker</button></div></div>
+    <div style="height:8px"></div><button class="btn wide" id="kgSave">Opslaan</button>`);
+  let kleren = null;
+  inner.querySelectorAll('#segKleren button').forEach(b=>{
+    b.onclick = ()=>{ kleren = kleren===b.dataset.v ? null : b.dataset.v; inner.querySelectorAll('#segKleren button').forEach(x=>x.classList.toggle('on', x.dataset.v===kleren)); };
+  });
+  setTimeout(()=>document.getElementById('kgIn').focus(), 300);
+  document.getElementById('kgSave').onclick = ()=>{
+    const v = parseFloat(String(document.getElementById('kgIn').value).replace(',','.'));
+    if(!v && !kleren){ closeSheet(); return; }
+    const today = iso(new Date());
+    S.weights = S.weights.filter(w=>w.date!==today);
+    S.weights.push({date:today, kg: v||null, kleren});
+    S.weights.sort((a,b)=>a.date<b.date?-1:1);
+    save(); closeSheet(); renderWeight(); renderToday(); celebrate('weigh');
+  };
+}
+document.getElementById('addWeightBtn').onclick = openWeightSheet;
+
+function renderWeight(){
+  const svg = document.getElementById('chart');
+  const pts = S.weights.filter(w=>w.kg);
+  if(pts.length < 2){
+    svg.innerHTML = `<text x="170" y="90" text-anchor="middle" fill="currentColor" style="font:15px Nunito;fill:var(--soft)">${pts.length? 'Na het volgende weegmoment zie je hier een lijn':'Hier komt je lijn'}</text>`;
+  } else {
+    const W=340,H=170,p=16;
+    const t0 = fromIso(pts[0].date).getTime(), t1 = fromIso(pts[pts.length-1].date).getTime();
+    const kgs = pts.map(x=>x.kg); let lo=Math.min(...kgs), hi=Math.max(...kgs);
+    const pad = Math.max(1,(hi-lo)*.3); lo-=pad; hi+=pad;
+    const X = t=> p + (t1===t0?0.5:(t-t0)/(t1-t0))*(W-2*p);
+    const Y = k=> H-p - (k-lo)/(hi-lo)*(H-2*p);
+    // trendlijn: voortschrijdend gemiddelde van 3
+    const trend = pts.map((x,i)=>{ const s=pts.slice(Math.max(0,i-1),i+2); return s.reduce((a,b)=>a+b.kg,0)/s.length; });
+    const path = pts.map((x,i)=>(i?'L':'M')+X(fromIso(x.date).getTime()).toFixed(1)+' '+Y(trend[i]).toFixed(1)).join(' ');
+    const dots = pts.map(x=>`<circle cx="${X(fromIso(x.date).getTime()).toFixed(1)}" cy="${Y(x.kg).toFixed(1)}" r="3.5" style="fill:var(--accent-2)"/>`).join('');
+    svg.innerHTML = `<path d="${path}" fill="none" style="stroke:var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${dots}`;
+  }
+  const list = document.getElementById('wList');
+  if(!S.weights.length){ list.innerHTML = '<div class="muted">Nog geen weegmomenten.</div>'; return; }
+  const kl = {ruimer:'kleren ruimer', zelfde:'kleren hetzelfde', strakker:'kleren strakker'};
+  list.innerHTML = S.weights.slice().reverse().map(w=>{
+    const d = fromIso(w.date);
+    return `<div class="r"><span>${d.getDate()} ${MONTHS[d.getMonth()].slice(0,3)}${w.kleren?' · '+kl[w.kleren]:''}</span><div><b>${w.kg?fmtNum(w.kg)+' kg':'—'}</b><button class="del" data-d="${w.date}" aria-label="Verwijderen">×</button></div></div>`;
+  }).join('');
+  list.querySelectorAll('.del').forEach(b=>b.onclick=()=>{
+    if(confirm('Dit weegmoment verwijderen?')){ S.weights = S.weights.filter(w=>w.date!==b.dataset.d); save(); renderWeight(); }
+  });
+}
+
+/* ---------- oefeningen-overzicht ---------- */
+function renderPlan(){
+  const el = document.getElementById('planList');
+  el.innerHTML = EXERCISES.map(e=>`<div class="ex" data-ex="${e.id}">
+    <div class="top" style="cursor:default"><b>${e.name}</b><span>${e.reps}</span></div>
+    <div class="how" style="margin-left:0">${e.how}</div>
+    <div class="lvl-label" style="margin-left:0">Jouw versie</div>
+    <div class="chips" style="margin-left:0">${e.levels.map(l=>`<button class="chip ${S.levels[e.id]===l?'on':''}" data-lvl="${l}">${l}</button>`).join('')}</div>
+  </div>`).join('');
+  el.querySelectorAll('.ex').forEach(box=>{
+    box.querySelectorAll('.chip').forEach(ch=>ch.onclick=()=>{
+      setLevel(box.dataset.ex, ch.dataset.lvl);
+    });
+  });
+}
+
+/* ---------- instellingen ---------- */
+function renderSettings(){
+  const s = S.settings;
+  document.querySelectorAll('#segEvery button').forEach(b=>b.classList.toggle('on', Number(b.dataset.v)===Number(s.weighEvery)));
+  document.getElementById('weighDay').value = s.weighDay;
+  document.getElementById('defMin').value = s.defMin;
+  document.getElementById('defInc').value = normInc(s.defInc);
+  document.getElementById('defSpeed').value = s.defSpeed;
+  document.querySelectorAll('#segTheme button').forEach(b=>b.classList.toggle('on', b.dataset.v===s.theme));
+  document.getElementById('ver').textContent = VERSION;
+}
+document.querySelectorAll('#segEvery button').forEach(b=>b.onclick=()=>{ S.settings.weighEvery=Number(b.dataset.v); save(); renderSettings(); renderToday(); });
+document.getElementById('weighDay').onchange = e=>{ S.settings.weighDay=Number(e.target.value); save(); renderToday(); };
+document.getElementById('defMin').onchange = e=>{ S.settings.defMin=Math.max(5,Number(e.target.value)||60); save(); renderToday(); };
+document.getElementById('defInc').onchange = e=>{ S.settings.defInc=normInc(e.target.value); save(); };
+document.getElementById('defSpeed').onchange = e=>{ S.settings.defSpeed=Number(String(e.target.value).replace(',','.'))||3.5; save(); };
+document.querySelectorAll('#segTheme button').forEach(b=>b.onclick=()=>{ S.settings.theme=b.dataset.v; save(); applyTheme(); renderSettings(); });
+
+document.getElementById('exportBtn').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'sterk-backup-'+iso(new Date())+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+document.getElementById('importBtn').onclick = ()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  f.text().then(t=>{
+    try{
+      const d = JSON.parse(t);
+      if(!d.days) throw 0;
+      if(!confirm('Back-up terugzetten? Wat nu in de app staat, wordt vervangen.')) return;
+      S = Object.assign(defaults(), d); save(); renderAll(); alert('Teruggezet!');
+    }catch(err){ alert('Dit lijkt geen back-up van Rise te zijn.'); }
+  });
+};
+
+/* ---------- navigatie ---------- */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+b.dataset.view));
+  window.scrollTo(0,0);
+});
+
+/* ---------- vieren ---------- */
+const cv = document.getElementById('confetti'), cx = cv.getContext('2d');
+let parts=[], raf=null;
+function celebrate(kind, custom){
+  const [emo, txt] = custom || pick(CHEERS[kind], 'cheer-'+kind);
+  const big = !!custom;
+  document.getElementById('toast').classList.toggle('big', big);
+  document.getElementById('toastEmoji').textContent = emo;
+  document.getElementById('toastText').textContent = txt;
+  const t = document.getElementById('toast'); t.classList.add('on');
+  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('on'), big ? 4200 : 2600);
+  if(navigator.vibrate) navigator.vibrate([20,40,20]);
+  if(kind==='weigh') return;
+  cv.width = innerWidth*devicePixelRatio; cv.height = innerHeight*devicePixelRatio;
+  const cs = getComputedStyle(document.body);
+  const cols = ['--accent','--accent-2','--walk','--loop','--cali'].map(v=>cs.getPropertyValue(v).trim()).concat(['#f2c4ce','#f6d98b']);
+  const n = big ? 260 : 110;
+  if(big){ setTimeout(()=>burst(cols, 120), 500); }
+  burst(cols, n);
+  if(!raf) loop();
+}
+function burst(cols, n){
+  for(let i=0;i<n;i++){
+    parts.push({x:cv.width/2, y:cv.height*.35, vx:(Math.random()-.5)*16*devicePixelRatio, vy:(-Math.random()*14-4)*devicePixelRatio,
+      g:.35*devicePixelRatio, r:(4+Math.random()*5)*devicePixelRatio, c:cols[i%cols.length], a:Math.random()*6, va:(Math.random()-.5)*.3, life:0});
+  }
+  if(!raf) loop();
+}
+function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{ p.vy+=p.g; p.vx*=.99; p.x+=p.vx; p.y+=p.vy; p.a+=p.va; p.life++;
+    cx.save(); cx.translate(p.x,p.y); cx.rotate(p.a); cx.fillStyle=p.c; cx.globalAlpha=Math.max(0,1-p.life/110);
+    cx.fillRect(-p.r/2,-p.r/4,p.r,p.r/2); cx.restore(); });
+  parts = parts.filter(p=>p.life<110 && p.y<cv.height+50);
+  if(parts.length) raf = requestAnimationFrame(loop); else { raf=null; cx.clearRect(0,0,cv.width,cv.height); }
+}
+
+/* ---------- mijlpalen ---------- */
+function setLevel(id, lvl){
+  const ex = EXERCISES.find(e=>e.id===id); if(!ex) return;
+  S.maxLevel = S.maxLevel || {};
+  const idx = ex.levels.indexOf(lvl);
+  const prevMax = S.maxLevel[id]!=null ? S.maxLevel[id] : ex.levels.indexOf(defaults().levels[id]);
+  S.levels[id] = lvl;
+  if(idx > prevMax){
+    S.maxLevel[id] = idx;
+    S.milestones = S.milestones || [];
+    S.milestones.push({date:iso(new Date()), kind:'level', ex:id, level:lvl});
+    save(); renderPlan(); renderMilestones();
+    celebrate(null, ['🏆', `Nieuwe stap! ${ex.name}: ${lvl.toLowerCase()}. Je wordt echt sterker.`]);
+  } else { save(); renderPlan(); }
+}
+const COUNT_MARKS = [1,5,10,25,50,75,100,150,200,300];
+function totalCount(){
+  let n=0; Object.values(S.days).forEach(d=>{ if(d.cali&&d.cali.done) n++; if(d.loop) n++; if(d.wandel) n++; }); return n;
+}
+function countMilestone(){
+  const n = totalCount();
+  S.milestones = S.milestones || [];
+  if(!COUNT_MARKS.includes(n) || S.milestones.some(m=>m.kind==='count'&&m.n===n)) return false;
+  S.milestones.push({date:iso(new Date()), kind:'count', n}); save();
+  const txt = n===1 ? 'Je allereerste keer! Hier begint het.' : `Al ${n} keer bewogen sinds je begon. Wauw.`;
+  celebrate(null, [n===1?'🌱':'🏆', txt]); renderMilestones();
+  return true;
+}
+function renderMilestones(){
+  const el = document.getElementById('msList'); if(!el) return;
+  const ms = (S.milestones||[]).slice().reverse();
+  if(!ms.length){ el.innerHTML = '<div class="muted">Elke stap vooruit komt hier te staan. Bijvoorbeeld als je push-ups een stapje zwaarder maakt.</div>'; return; }
+  el.innerHTML = ms.map(m=>{
+    const d = fromIso(m.date); const dt = d.getDate()+' '+MONTHS[d.getMonth()].slice(0,3);
+    const ex = EXERCISES.find(e=>e.id===m.ex);
+    const t = m.kind==='level' ? `🏆 ${ex?ex.name:''}: ${m.level.toLowerCase()}` : (m.n===1?'🌱 Eerste keer bewogen':`🎉 ${m.n} keer bewogen`);
+    return `<div class="r"><b style="font-weight:700">${t}</b><span>${dt}</span></div>`;
+  }).join('');
+}
+
+/* ---------- rondje-begeleider ---------- */
+let G = null, gTick = null, wakeLock = null, audioCtx = null;
+function beep(){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    [0,0.18].forEach(t=>{ const o=audioCtx.createOscillator(), g=audioCtx.createGain();
+      o.frequency.value=880; o.connect(g); g.connect(audioCtx.destination);
+      g.gain.setValueAtTime(0.0001,audioCtx.currentTime+t); g.gain.exponentialRampToValueAtTime(0.25,audioCtx.currentTime+t+0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+t+0.15); o.start(audioCtx.currentTime+t); o.stop(audioCtx.currentTime+t+0.16); });
+  }catch(e){}
+  if(navigator.vibrate) navigator.vibrate(200);
+}
+function openGuide(){
+  const last = (S.days[iso(new Date())]||{}).cali;
+  const rounds = (last && last.rounds) || S.lastRounds || 2;
+  openSheet(`<h3>▶︎ Start rondje</h3><p class="sub">Ik loop met je mee, oefening voor oefening. Bij de plank en de pauzes loopt een timer.</p>
+    <div class="field"><label>Hoeveel rondes vandaag?</label>
+      <div class="seg" id="gRounds">${[1,2,3].map(n=>`<button data-v="${n}" class="${n===rounds?'on':''}">${n}</button>`).join('')}</div></div>
+    <p class="muted" style="margin:0 2px 14px">Halverwege stoppen mag altijd. Wat je gedaan hebt, telt.</p>
+    <button class="btn wide" id="gBegin">Beginnen</button>`);
+  let r = rounds;
+  inner.querySelectorAll('#gRounds button').forEach(b=>b.onclick=()=>{ r=Number(b.dataset.v); inner.querySelectorAll('#gRounds button').forEach(x=>x.classList.toggle('on',x===b)); });
+  document.getElementById('gBegin').onclick = ()=>{ S.lastRounds=r; closeSheet(); beep(); startGuide(r); };
+}
+function startGuide(rounds){
+  // stappen opbouwen: oefening, pauze, oefening ... en tussen rondes een langere pauze
+  const steps = [];
+  for(let r=1;r<=rounds;r++){
+    EXERCISES.forEach((e,i)=>{
+      steps.push({type:'ex', ex:e, round:r});
+      const lastOfRound = i===EXERCISES.length-1;
+      if(!lastOfRound) steps.push({type:'rest', secs:30, round:r});
+      else if(r<rounds) steps.push({type:'rest', secs:75, round:r, between:true});
+    });
+  }
+  G = {steps, i:0, rounds, done:{}, maxRound:0};
+  document.getElementById('guide').classList.add('on');
+  try{ navigator.wakeLock && navigator.wakeLock.request('screen').then(l=>wakeLock=l).catch(()=>{}); }catch(e){}
+  showStep();
+}
+function stopTimer(){ clearInterval(gTick); gTick=null; }
+function runTimer(secs, onEnd){
+  stopTimer(); let left = secs; const el = document.getElementById('gTimer');
+  const fmt = n=> n>=60 ? Math.floor(n/60)+':'+String(n%60).padStart(2,'0') : String(n);
+  el.textContent = fmt(left);
+  gTick = setInterval(()=>{ left--; el.textContent = fmt(Math.max(0,left)); if(left<=0){ stopTimer(); beep(); onEnd(); } }, 1000);
+}
+function plankSecs(){ const l=S.levels.plank; return l==='Langer vasthouden'?45:30; }
+function showStep(){
+  stopTimer();
+  const st = G.steps[G.i];
+  if(!st){ finishGuide(true); return; }
+  const $ = id=>document.getElementById(id);
+  const exCount = G.steps.filter(s=>s.type==='ex').length;
+  const exNo = G.steps.slice(0,G.i+1).filter(s=>s.type==='ex').length;
+  $('gStep').textContent = `Rondje ${st.round} van ${G.rounds}`;
+  const next = G.steps.slice(G.i+1).find(s=>s.type==='ex');
+  $('gNext').textContent = next ? 'Hierna: '+next.ex.name+(next.round!==st.round?' (nieuw rondje)':'') : (st.type==='ex'?'Dit is de laatste!':'');
+  $('gTimer').textContent = '';
+  if(st.type==='rest'){
+    $('gKind').textContent = st.between ? 'Even op adem komen' : 'Pauze';
+    $('gName').textContent = st.between ? 'Rondje klaar! 🎉' : 'Even rust';
+    $('gReps').textContent = st.between ? 'Drink wat water' : 'Schud je armen even los';
+    $('gHow').textContent = '';
+    $('gGo').textContent = 'Verder'; $('gSkip').style.visibility='hidden';
+    runTimer(st.secs, ()=>{ G.i++; showStep(); });
+    $('gGo').onclick = ()=>{ G.i++; showStep(); };
+    return;
+  }
+  const e = st.ex;
+  $('gKind').textContent = `Oefening ${exNo} van ${exCount}`;
+  $('gName').textContent = e.name;
+  $('gReps').textContent = (e.id==='plank' ? plankSecs()+' seconden' : e.reps) + ' · ' + (S.levels[e.id]||'').toLowerCase();
+  $('gHow').textContent = e.how;
+  $('gSkip').style.visibility='visible';
+  $('gSkip').onclick = ()=>{ G.i++; showStep(); };
+  const markDone = ()=>{ G.done[e.id]=true; G.maxRound=Math.max(G.maxRound, st.round); };
+  if(e.id==='plank'){
+    $('gGo').textContent = 'Start timer';
+    $('gGo').onclick = ()=>{
+      $('gGo').textContent = 'Klaar'; 
+      $('gGo').onclick = ()=>{ markDone(); G.i++; showStep(); };
+      runTimer(plankSecs(), ()=>{ markDone(); G.i++; showStep(); });
+    };
+  } else {
+    $('gGo').textContent = 'Klaar';
+    $('gGo').onclick = ()=>{ markDone(); G.i++; showStep(); };
+  }
+}
+function finishGuide(complete){
+  stopTimer();
+  document.getElementById('guide').classList.remove('on');
+  try{ wakeLock && wakeLock.release(); }catch(e){} wakeLock=null;
+  if(!G) return;
+  const any = Object.keys(G.done).length;
+  if(any){
+    const o = dayObj(iso(new Date()));
+    const was = o.cali && o.cali.done;
+    o.cali = o.cali || {ex:{}};
+    o.cali.ex = Object.assign(o.cali.ex||{}, G.done);
+    o.cali.rounds = complete ? G.rounds : Math.max(1, G.maxRound);
+    o.cali.done = true;
+    selDate = iso(new Date());
+    save(); renderToday();
+    if(!was){ if(!countMilestone()) celebrate('cali', complete ? null : ['💚','Wat je gedaan hebt, telt helemaal. Goed bezig.']); }
+  }
+  G = null;
+}
+document.getElementById('gClose').onclick = ()=>{
+  if(G && Object.keys(G.done).length){ finishGuide(false); } else { finishGuide(false); }
+};
+document.getElementById('startGuide2').onclick = openGuide;
+
+/* ---------- maandterugblik ---------- */
+const MONTH_NOTES = [
+  'Kijk eens wat je allemaal gedaan hebt. Elke stip is een keer dat je voor jezelf koos.',
+  'Dit is jouw maand. Rustdagen horen erbij, die zijn net zo goed onderdeel van sterker worden.',
+  'Wat een mooie verzameling stipjes. Trots op je.',
+  'Elke stip telt. En de lege dagen? Die waren er om te herstellen.'
+];
+function openMonth(offset){
+  offset = offset||0;
+  const now = new Date(); const first = new Date(now.getFullYear(), now.getMonth()+offset, 1);
+  const y = first.getFullYear(), m = first.getMonth(); const days = new Date(y,m+1,0).getDate();
+  let c=0,l=0,lm=0,w=0,wm=0, active=0;
+  let cells = ['ma','di','wo','do','vr','za','zo'].map(d=>`<div class="h">${d}</div>`).join('');
+  const pad = (first.getDay()+6)%7; for(let i=0;i<pad;i++) cells += '<div class="c empty"></div>';
+  const today = iso(now);
+  for(let d=1; d<=days; d++){
+    const k = iso(new Date(y,m,d)), o = S.days[k]||{};
+    let dots='';
+    if(o.cali&&o.cali.done){ c++; dots+='<i style="background:var(--cali)"></i>'; }
+    if(o.loop){ l++; lm+=Number(o.loop.min)||0; dots+='<i style="background:var(--loop)"></i>'; }
+    if(o.wandel){ w++; wm+=Number(o.wandel.min)||0; dots+='<i style="background:var(--walk)"></i>'; }
+    if(dots) active++;
+    cells += `<div class="c ${k===today?'today':''}">${d}<span class="dots">${dots}</span></div>`;
+  }
+  const ms = (S.milestones||[]).filter(x=>x.date.slice(0,7)===k7(y,m));
+  const walkH = Math.floor((lm+wm)/60), walkM = (lm+wm)%60;
+  const rows = [];
+  if(c) rows.push(`<div class="row"><span>💪 Calisthenics</span><b>${c}×</b></div>`);
+  if(l) rows.push(`<div class="row"><span>⛰️ Loopband</span><b>${l}×</b></div>`);
+  if(w) rows.push(`<div class="row"><span>🚶‍♀️ Rustig lopen</span><b>${w}×</b></div>`);
+  if(lm+wm) rows.push(`<div class="row"><span>👟 In totaal gelopen</span><b>${walkH?walkH+' uur ':''}${walkM?walkM+' min':''}</b></div>`);
+  if(ms.length) rows.push(`<div class="row"><span>🏆 Mijlpalen</span><b>${ms.length}</b></div>`);
+  openSheet(`<div class="mnav"><button class="iconbtn" id="mPrev">‹</button><b>${MONTHS[m][0].toUpperCase()+MONTHS[m].slice(1)} ${y}</b><button class="iconbtn" id="mNext" ${offset>=0?'style="visibility:hidden"':''}>›</button></div>
+    <div class="note" style="margin:8px 0 12px"><p>${active ? MONTH_NOTES[(y*12+m)%MONTH_NOTES.length] : 'Deze maand is nog leeg, en dat is oké. Hier komt alles te staan wat je doet.'}</p><small>— Rise</small></div>
+    <div class="cal">${cells}</div>
+    ${rows.length?`<div class="card weeksum" style="margin-top:12px">${rows.join('')}</div>`:''}`);
+  document.getElementById('mPrev').onclick = ()=>openMonth(offset-1);
+  document.getElementById('mNext').onclick = ()=>openMonth(offset+1);
+}
+function k7(y,m){ return y+'-'+String(m+1).padStart(2,'0'); }
+document.getElementById('monthBtn').onclick = ()=>openMonth(0);
+
+/* ---------- Dropbox (zelfde koppeling als Lately en Huisritme) ---------- */
+const DBX_ID='k2a2fputgkhil79', DBX_FILE='/sterk-data.json', DBX_OWN='sterk-dropbox-refresh-token';
+const dbxRT=()=>{ try{ return localStorage.getItem(DBX_OWN)||localStorage.getItem('lately-dropbox-refresh-token')||localStorage.getItem('huisritme-dropbox-refresh-token'); }catch(e){ return null; } };
+const dbxRedirect=()=>location.origin+location.pathname.replace(/index\.html$/,'');
+let dbxTok=null, dbxExp=0, dbxTimer=null, DBX={state:'', at:0};
+function b64url(u8){let s='';u8.forEach(b=>s+=String.fromCharCode(b));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+async function dbxConnect(){
+  const ver=b64url(crypto.getRandomValues(new Uint8Array(48))); localStorage.setItem('sterk-dropbox-verifier',ver);
+  const ch=b64url(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ver))));
+  const u=new URL('https://www.dropbox.com/oauth2/authorize');
+  Object.entries({client_id:DBX_ID,response_type:'code',code_challenge:ch,code_challenge_method:'S256',redirect_uri:dbxRedirect(),token_access_type:'offline'}).forEach(([k,v])=>u.searchParams.set(k,v));
+  location.href=u.toString();
+}
+async function dbxFinish(code){
+  try{ const r=await(await fetch('https://api.dropboxapi.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({code,grant_type:'authorization_code',client_id:DBX_ID,redirect_uri:dbxRedirect(),code_verifier:localStorage.getItem('sterk-dropbox-verifier')||''})})).json();
+    if(r.refresh_token){ localStorage.setItem(DBX_OWN,r.refresh_token); dbxTok=r.access_token; dbxExp=Date.now()+r.expires_in*1000; }
+  }catch(e){}
+  localStorage.removeItem('sterk-dropbox-verifier');
+}
+async function dbxToken(){
+  if(dbxTok&&Date.now()<dbxExp-60000) return dbxTok;
+  const rt=dbxRT(); if(!rt) return null;
+  try{ const r=await(await fetch('https://api.dropboxapi.com/oauth2/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({refresh_token:rt,grant_type:'refresh_token',client_id:DBX_ID})})).json();
+    if(r.access_token){ dbxTok=r.access_token; dbxExp=Date.now()+r.expires_in*1000; return dbxTok; } }catch(e){}
+  return null;
+}
+async function dbxDown(){ const t=await dbxToken(); if(!t) return undefined;
+  try{ const r=await fetch('https://content.dropboxapi.com/2/files/download',{method:'POST',headers:{Authorization:'Bearer '+t,'Dropbox-API-Arg':JSON.stringify({path:DBX_FILE})}});
+    if(r.status===409) return null; if(!r.ok) return undefined; return await r.json(); }catch(e){ return undefined; } }
+async function dbxUp(){ const t=await dbxToken(); if(!t) return false;
+  let bridge=null; try{ bridge=JSON.parse(localStorage.getItem(BRIDGE_KEY)||'null'); }catch(e){}
+  const body = {app:'Rise', version:VERSION, updatedAt:S.updatedAt||Date.now(), state:S, bridge};
+  try{ const r=await fetch('https://content.dropboxapi.com/2/files/upload',{method:'POST',headers:{Authorization:'Bearer '+t,'Content-Type':'application/octet-stream','Dropbox-API-Arg':JSON.stringify({path:DBX_FILE,mode:'overwrite',mute:true})},body:JSON.stringify(body)});
+    return r.ok; }catch(e){ return false; } }
+function dbxSoon(){ if(!dbxRT()) return; clearTimeout(dbxTimer);
+  dbxTimer=setTimeout(async()=>{ DBX.state='bezig'; renderDbx(); const ok=await dbxUp(); DBX.state=ok?'bewaard':'fout'; DBX.at=Date.now(); renderDbx(); }, 3000); }
+async function dbxStart(){
+  const code=new URLSearchParams(location.search).get('code');
+  if(code && localStorage.getItem('sterk-dropbox-verifier')){ history.replaceState({},'',location.pathname); await dbxFinish(code); }
+  if(!dbxRT()){ renderDbx(); return; }
+  DBX.state='bezig'; renderDbx();
+  const remote = await dbxDown();
+  if(remote===undefined){ DBX.state='fout'; renderDbx(); return; }
+  if(remote && remote.state && (remote.updatedAt||0) > (S.updatedAt||0)){
+    S = Object.assign(defaults(), remote.state); S.updatedAt = remote.updatedAt;
+    save(true); renderAll();
+  } else if(!remote || (S.updatedAt||0) > (remote.updatedAt||0)){
+    await dbxUp();
+  }
+  DBX.state='bewaard'; DBX.at=Date.now(); renderDbx();
+}
+function renderDbx(){
+  const el = document.getElementById('dbxCard'); if(!el) return;
+  const has = !!dbxRT();
+  const tstr = d=> String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  if(has){
+    const st = {bewaard:'Bewaard'+(DBX.at?' om '+tstr(new Date(DBX.at)):''), bezig:'Bezig met bewaren…', fout:'Bewaren lukte even niet. Ik probeer het later opnieuw.'}[DBX.state] || 'Verbonden';
+    el.innerHTML = `<div class="weeksum"><div class="row"><span>☁️ Dropbox</span><b>${st}</b></div></div>
+      <p class="muted" style="margin:8px 2px 0">Rise gebruikt dezelfde Dropbox als Lately en Huisritme. Je gegevens staan in sterk-data.json.</p>`;
+  } else {
+    el.innerHTML = `<p class="muted" style="margin:0 2px 12px">Is Lately op dit apparaat al met Dropbox verbonden? Dan neemt Rise die koppeling vanzelf over. Anders kun je hier verbinden.</p>
+      <button class="btn wide ghost" id="dbxBtn">Verbind met Dropbox</button>`;
+    document.getElementById('dbxBtn').onclick = dbxConnect;
+  }
+}
+
+/* ---------- start ---------- */
+function renderAll(){ applyTheme(); renderToday(); renderPlan(); renderMilestones(); renderWeight(); renderSettings(); renderDbx(); }
+renderAll();
+writeBridge();
+// bij terugkomen in de app: datum en thema verversen
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='visible'){
+    const t = iso(new Date());
+    if(selDate > t) selDate = t;
+    if(renderAll._last !== t){ selDate = t; renderAll._last = t; }
+    renderAll();
+  }
+});
+renderAll._last = iso(new Date());
+
+dbxStart();
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
+</script>
+</body>
+</html>

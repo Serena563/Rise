@@ -1,0 +1,16 @@
+{
+  "name": "Rise",
+  "short_name": "Rise",
+  "description": "Calisthenics en lopen afstrepen, en elke keer vieren.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f2ea",
+  "theme_color": "#f4f2ea",
+  "lang": "nl",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

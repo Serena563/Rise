@@ -1,0 +1,18 @@
+Rise — versie 2026-11-16b
+
+Zo zet je hem online:
+1. Maak op GitHub (account Serena563, hetzelfde als Lately) een nieuwe repository, bijvoorbeeld "Rise".
+2. Upload alle bestanden uit deze ZIP (niet de map zelf, maar wat erin zit).
+3. Ga naar Settings > Pages, kies "Deploy from a branch", branch "main", map "/ (root)" en klik Save.
+4. Na een minuutje staat hij op: https://serena563.github.io/Rise/
+5. Open die link in Safari op je iPhone, tik op Delen > "Zet op beginscherm".
+
+Koppeling met Lately:
+Rise zet je beweging klaar onder de naam "lately.bridge.beweging".
+Omdat beide apps op serena563.github.io staan, kan Lately dat lezen.
+Lately moet daar nog een update voor krijgen.
+
+Dropbox:
+Is Lately op je telefoon al met Dropbox verbonden? Dan neemt Rise die koppeling vanzelf over (zelfde GitHub-account).
+Wil je toch los verbinden via de knop in Instellingen, voeg dan in je Dropbox-app (dezelfde als Huisritme)
+bij "Redirect URIs" dit adres toe: https://serena563.github.io/Rise/
