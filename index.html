@@ -74,6 +74,13 @@ h2{font-size:15px;text-transform:uppercase;letter-spacing:.8px;color:var(--soft)
 .act .ck{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:16px;flex-shrink:0}
 .act.done{border-color:var(--accent-2)}
 .act.done .ck{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.act .tag{display:inline-block;font-size:11px;font-weight:800;color:var(--accent);background:var(--chip);border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:2px}
+.planline{margin:-4px 4px 12px;font-size:14.5px;color:var(--soft)}
+.planline b{color:var(--ink)}
+.wp{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.wp:last-child{border-bottom:none}
+.wp span{width:30px;font-weight:800;text-transform:capitalize}
+.wp select{flex:1;font-family:inherit;font-size:14px;padding:8px 6px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
 
 .card{background:var(--paper);border-radius:18px;padding:16px;box-shadow:var(--card-shadow);margin-bottom:12px}
 .weigh-card{display:flex;align-items:center;gap:12px}
@@ -244,6 +251,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <div class="daypick" id="dayPick"></div>
 
     <h2 id="dayTitle">Vandaag</h2>
+    <div class="planline" id="planLine"></div>
     <div class="act" data-act="cali">
       <div class="ic" style="background:color-mix(in srgb,var(--cali) 22%,transparent)">💪</div>
       <div class="tx"><b>Calisthenics</b><span id="caliSub">±20 min · het rondje</span></div>
@@ -391,6 +399,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 
   <!-- INSTELLINGEN -->
   <section class="view" id="v-set">
+    <h2>Mijn week</h2>
+    <div class="card" id="weekPlan"></div>
+
     <h2>Weegmoment</h2>
     <div class="card">
       <div class="field"><label>Hoe vaak</label>
@@ -463,7 +474,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <div class="sheet" id="sheet"><div class="grab"></div><div class="inner" id="sheetInner"></div></div>
 
 <script>
-const VERSION = '2026-11-16b';
+const VERSION = '2026-11-16c';
 const KEY = 'sterk.v1';
 const BRIDGE_KEY = 'lately.bridge.beweging';
 
@@ -531,6 +542,16 @@ const NOTES = {
     'Welkom terug. Geen inhaalwerk nodig, gewoon vandaag.',
     'Hoi! Alles wat je vandaag doet is een mooi begin.'
   ],
+  planDay:[
+    'Vandaag staat er iets op je plan. Kijk wat past, alles telt.',
+    'Plandag! Eén rondje is ook een rondje.',
+    'Zin om te beginnen? Ik juich mee met alles wat je doet.',
+    'Er staat wat op je plan vandaag. En als het niet lukt, is dat ook oké.'
+  ],
+  lightDay:[
+    'Vandaag is een lichte dag. Rustig aan, het telt allemaal.',
+    'Licht rondje vandaag. Je spieren zijn nog bezig met herstellen, en dat is goed.'
+  ],
   restDay:[
     'Vandaag geen training? Prima. Je spieren worden juist nu sterker.',
     'Rustdag. Dat is ook een deel van het plan.'
@@ -546,6 +567,7 @@ function defaults(){
   return {
     settings:{weighEvery:7, weighDay:0, defMin:60, defInc:3, defSpeed:3.5, theme:'auto'},
     levels:{push:'Knieën', squat:'Naar de stoel', row:'Iets achterover', bridge:'Twee benen', plank:'Op je knieën', deadbug:'Arm + been'},
+    week:{1:{r:'normaal',l:'helling'},2:{r:'licht',l:'rustig'},4:{r:'normaal',l:'helling'}},
     days:{}, weights:[], lastNote:{}
   };
 }
@@ -652,6 +674,7 @@ function renderToday(){
       (exDone ? `${exDone} van 6 oefeningen` : '±20 min · het rondje'));
   set('loop', o.loop, o.loop ? `${o.loop.min} min · ${incLabel(o.loop.inc)}${o.loop.speed?' · '+fmtNum(o.loop.speed)+' km/u':''}` : `Tik om af te strepen · ${S.settings.defMin} min`);
   set('wandel', o.wandel, o.wandel ? `${o.wandel.min} min rustig gelopen` : 'Zonder helling, gewoon fijn');
+  renderPlanLine(sd);
 
   // vriendennotitie (blijft hetzelfde zolang de situatie niet verandert)
   let group, gkey;
@@ -662,6 +685,8 @@ function renderToday(){
     const gap = lastK ? Math.round((fromIso(today)-fromIso(lastK))/864e5) : 0;
     const yest = S.days[iso(addDays(now,-1))];
     if(lastK && gap>=4){ group=NOTES.back; gkey='back'; }
+    else if(planFor(now) && planFor(now).r==='licht'){ group=NOTES.lightDay; gkey='light'; }
+    else if(planFor(now)){ group=NOTES.planDay; gkey='plan'; }
     else if(yest && yest.cali && yest.cali.done){ group=NOTES.restDay; gkey='rest'; }
     else { group=NOTES.fresh; gkey='fresh'; }
   }
@@ -1021,8 +1046,10 @@ function beep(){
 }
 function openGuide(){
   const last = (S.days[iso(new Date())]||{}).cali;
-  const rounds = (last && last.rounds) || S.lastRounds || 2;
-  openSheet(`<h3>▶︎ Start rondje</h3><p class="sub">Ik loop met je mee, oefening voor oefening. Bij de plank en de pauzes loopt een timer.</p>
+  const tp = planFor(new Date());
+  const light = tp && tp.r==='licht';
+  const rounds = (last && last.rounds) || (light ? 1 : (S.lastRounds || 2));
+  openSheet(`<h3>▶︎ Start rondje</h3><p class="sub">${light ? 'Vandaag is een lichte dag: één rondje, of de makkelijkere versie van elke oefening.' : 'Ik loop met je mee, oefening voor oefening. Bij de plank en de pauzes loopt een timer.'}</p>
     <div class="field"><label>Hoeveel rondes vandaag?</label>
       <div class="seg" id="gRounds">${[1,2,3].map(n=>`<button data-v="${n}" class="${n===rounds?'on':''}">${n}</button>`).join('')}</div></div>
     <p class="muted" style="margin:0 2px 14px">Halverwege stoppen mag altijd. Wat je gedaan hebt, telt.</p>
@@ -1228,8 +1255,40 @@ function renderDbx(){
   }
 }
 
+
+/* ---------- mijn week ---------- */
+function planFor(d){ const p=(S.week||{})[d.getDay()]; return p && (p.r||p.l) ? p : null; }
+function renderPlanLine(d){
+  const el=document.getElementById('planLine'); const p=planFor(d);
+  document.querySelectorAll('.act .tag').forEach(t=>t.remove());
+  if(!p){ el.innerHTML='Vrije dag op je plan. Bewegen mag, hoeft niet.'; return; }
+  const parts=[];
+  if(p.r) parts.push(p.r==='licht'?'licht rondje':'rondje');
+  if(p.l) parts.push(p.l==='helling'?'loopband met helling':'rustig lopen');
+  el.innerHTML='Op je plan: <b>'+parts.join(', daarna ')+'</b>';
+  const tag=(act,txt)=>{ const b=document.querySelector(`.act[data-act=${act}] .tx b`); if(b){ const t=document.createElement('span'); t.className='tag'; t.textContent=txt; b.appendChild(t);} };
+  if(p.r) tag('cali', p.r==='licht'?'licht':'plan');
+  if(p.l==='helling') tag('loop','plan');
+  if(p.l==='rustig') tag('wandel','plan');
+}
+function renderWeekPlan(){
+  const el=document.getElementById('weekPlan'); if(!el) return;
+  S.week=S.week||{};
+  const order=[1,2,3,4,5,6,0];
+  el.innerHTML = '<p class="muted" style="margin:0 2px 8px">Wat staat er op welke dag? Het is een plan, geen moeten.</p>' + order.map(d=>{
+    const p=S.week[d]||{};
+    return `<div class="wp"><span>${DAYS_SHORT[d]}</span>
+      <select data-d="${d}" data-k="r"><option value="">Geen rondje</option><option value="normaal" ${p.r==='normaal'?'selected':''}>Rondje</option><option value="licht" ${p.r==='licht'?'selected':''}>Licht rondje</option></select>
+      <select data-d="${d}" data-k="l"><option value="">Niet lopen</option><option value="helling" ${p.l==='helling'?'selected':''}>Met helling</option><option value="rustig" ${p.l==='rustig'?'selected':''}>Rustig lopen</option></select></div>`;
+  }).join('');
+  el.querySelectorAll('select').forEach(sel=>sel.onchange=()=>{
+    const d=sel.dataset.d; S.week[d]=S.week[d]||{}; S.week[d][sel.dataset.k]=sel.value||undefined;
+    if(!S.week[d].r && !S.week[d].l) delete S.week[d];
+    save(); renderToday();
+  });
+}
 /* ---------- start ---------- */
-function renderAll(){ applyTheme(); renderToday(); renderPlan(); renderMilestones(); renderWeight(); renderSettings(); renderDbx(); }
+function renderAll(){ applyTheme(); renderWeekPlan(); renderToday(); renderPlan(); renderMilestones(); renderWeight(); renderSettings(); renderDbx(); }
 renderAll();
 writeBridge();
 // bij terugkomen in de app: datum en thema verversen
