@@ -1,4 +1,4 @@
-const CACHE = 'rise-2026-11-16c';
+const CACHE = 'rise-2026-11-17a';
 const FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

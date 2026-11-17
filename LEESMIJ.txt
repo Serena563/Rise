@@ -1,4 +1,4 @@
-Rise — versie 2026-11-16c
+Rise — versie 2026-11-17a
 
 Zo zet je hem online:
 1. Maak op GitHub (account Serena563, hetzelfde als Lately) een nieuwe repository, bijvoorbeeld "Rise".

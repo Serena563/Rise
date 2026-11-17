@@ -420,7 +420,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
       <div class="row2">
         <div class="field"><label>Minuten</label><input type="number" id="defMin" inputmode="numeric"></div>
         <div class="field"><label>Gaatje</label><select id="defInc"><option value="0">Plat</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></div>
-        <div class="field"><label>Km/u</label><input type="number" id="defSpeed" inputmode="decimal" step="0.1"></div>
+        <div class="field"><label>Km/u</label><input type="text" id="defSpeed" inputmode="decimal" autocomplete="off"></div>
       </div>
     </div>
 
@@ -474,7 +474,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 <div class="sheet" id="sheet"><div class="grab"></div><div class="inner" id="sheetInner"></div></div>
 
 <script>
-const VERSION = '2026-11-16c';
+const VERSION = '2026-11-17a';
 const KEY = 'sterk.v1';
 const BRIDGE_KEY = 'lately.bridge.beweging';
 
@@ -845,7 +845,7 @@ function openWalkSheet(kind){
 function openWeightSheet(){
   const last = S.weights.length ? S.weights[S.weights.length-1].kg : '';
   openSheet(`<h3>⚖️ Weegmoment</h3><p class="sub">Het liefst 's ochtends, na het plassen, voor het ontbijt. Dan kun je de momenten het best vergelijken.</p>
-    <div class="field"><label>Gewicht (kg)</label><input type="number" id="kgIn" inputmode="decimal" step="0.1" placeholder="${last?fmtNum(last):''}"></div>
+    <div class="field"><label>Gewicht (kg)</label><input type="text" id="kgIn" inputmode="decimal" autocomplete="off" pattern="[0-9]*[.,]?[0-9]*" placeholder="${last?fmtNum(last):''}"></div>
     <div class="field"><label>Hoe zitten je kleren? (mag je overslaan)</label>
       <div class="seg" id="segKleren"><button data-v="ruimer">Ruimer</button><button data-v="zelfde">Hetzelfde</button><button data-v="strakker">Strakker</button></div></div>
     <div style="height:8px"></div><button class="btn wide" id="kgSave">Opslaan</button>`);
@@ -919,7 +919,7 @@ function renderSettings(){
   document.getElementById('weighDay').value = s.weighDay;
   document.getElementById('defMin').value = s.defMin;
   document.getElementById('defInc').value = normInc(s.defInc);
-  document.getElementById('defSpeed').value = s.defSpeed;
+  document.getElementById('defSpeed').value = fmtNum(s.defSpeed);
   document.querySelectorAll('#segTheme button').forEach(b=>b.classList.toggle('on', b.dataset.v===s.theme));
   document.getElementById('ver').textContent = VERSION;
 }
